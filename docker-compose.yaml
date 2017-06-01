@@ -1,0 +1,38 @@
+version: '3'
+services:
+  rproxy:
+    image: nginx:1.13-alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./volumes/certs:/etc/ssl/certs:ro
+      - ttrss:/var/www
+    links:
+      - ttrss:ttrss
+  ttrss:
+    image: tkaefer/docker-ttrss
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_TYPE=pgsql
+      - DB_USER=ttrss
+      - DB_NAME=ttrss
+      - DB_PASS=ttrss
+      - LOG_DESTINATION=direct
+    links:
+      - database:database
+    volumes:
+      - ttrss:/var/www
+    # entrypoint: ping database
+  database:
+    image: postgres:9.6-alpine
+    environment:
+      - POSTGRES_USER=ttrss
+      - POSTGRES_DB=ttrss
+      - POSTGRES_PASSWORD=ttrss
+    volumes:
+      - ./volumes/postgres-data:/var/lib/postgresql/data
+volumes:
+  ttrss:

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # remove trailing / if any.
@@ -15,5 +15,21 @@ else
     ln -sf "/var/www" "/var/tmp/www/${ROOT_PATH}"
 fi
 
-php /configure-db.php
+COUNTER=0
+until nc -v -z -w3 $DB_HOST $DB_PORT; do
+    echo -n "Checking for open database port - "
+    if [ $COUNTER -ge 9 ]; then
+      echo "Database seems not ready yet. Stop trying after $COUNTER retries."
+      break
+    fi
+    echo "Database seems not ready yet."
+    sleep 3
+    let COUNTER=COUNTER+1
+done
+
+if [ $COUNTER -gt 0 ]; then
+  sleep 5
+fi
+
+php /configure.php
 exec supervisord -c /etc/supervisor/conf.d/supervisord.conf

@@ -50,7 +50,7 @@ if (!empty($eport)) {
 //   database pass (DB_PASS) can be supplied or defaults to database user
 $config['DB_NAME'] = env('DB_NAME', 'ttrss');
 $config['DB_USER'] = env('DB_USER', $config['DB_NAME']);
-$config['DB_PASS'] = env('DB_PASS', $config['DB_USER']);
+$config['DB_PASS'] = env('DB_PASS', $config['DB_PASS']);
 
 if (!dbcheck($config)) {
     echo 'Database login failed, trying to create...' . PHP_EOL;
@@ -61,9 +61,9 @@ if (!dbcheck($config)) {
     $super = $config;
 
     $super['DB_NAME'] = null;
-    $super['DB_USER'] = env('DB_ENV_USER', 'docker');
-    $super['DB_PASS'] = env('DB_ENV_PASS', $super['DB_USER']);
-    
+    $super['DB_USER'] = env('DB_USER', 'ttrss');
+    $super['DB_PASS'] = env('DB_PASS', $super['DB_PASS']);
+
     $pdo = dbconnect($super);
 
     if ($super['DB_TYPE'] === 'mysql') {
@@ -75,7 +75,7 @@ if (!dbcheck($config)) {
     }
 
     unset($pdo);
-    
+
     if (dbcheck($config)) {
         echo 'Database login created and confirmed' . PHP_EOL;
     } else {
@@ -108,7 +108,7 @@ if(getenv('AUTH_METHOD') == "ldap") {
     $contents .= "define('LDAP_AUTH_ALLOW_UNTRUSTED_CERT', " . env("LDAP_AUTH_ALLOW_UNTRUSTED_CERT", "TRUE") . ");\n";
     $contents .= "define('LDAP_AUTH_BASEDN', '" . env("LDAP_AUTH_BASEDN") . "');\n";
     $contents .= "define('LDAP_AUTH_ANONYMOUSBEFOREBIND', " . env("LDAP_AUTH_ANONYMOUSBEFOREBIND", "FALSE") . ");\n";
-    // ??? will be replaced with the entered username(escaped) at login 
+    // ??? will be replaced with the entered username(escaped) at login
     $contents .= "define('LDAP_AUTH_SEARCHFILTER', '" .env("LDAP_AUTH_SEARCHFILTER", "(&(objectClass=user)(sAMAccountName=???))") . "');\n";
     $contents .= "define('LDAP_AUTH_BINDDN', '" . env("LDAP_AUTH_BINDDN") . "');\n";
     $contents .= "define('LDAP_AUTH_BINDPW', '" . env("LDAP_AUTH_BINDPW") . "');\n";
@@ -116,6 +116,59 @@ if(getenv('AUTH_METHOD') == "ldap") {
     $contents .= "define('LDAP_AUTH_LOG_ATTEMPTS', " . env("LDAP_AUTH_LOG_ATTEMPTS", "FALSE") . ");\n";
     $contents .= "define('LDAP_AUTH_DEBUG', " . env("LDAP_AUTH_DEBUG", "FALSE") . ");\n";
 }
+
+if(getenv('LOG_DESTINATION') !== false) {
+  $logDestination = env('LOG_DESTINATION', '');
+
+  if($logDestination == 'direct') {
+    $logDestination = '';
+  }
+
+  $config['LOG_DESTINATION'] = $logDestination;
+}
+
+if(getenv('SMTP_SERVER') !== false) {
+  $config['SMTP_SERVER'] = env('SMTP_SERVER', '');
+}
+
+if(getenv('SMTP_LOGIN') !== false) {
+  $config['SMTP_LOGIN'] = env('SMTP_LOGIN', '');
+}
+
+if(getenv('SMTP_PASSWORD') !== false) {
+  $config['SMTP_PASSWORD'] = env('SMTP_PASSWORD', '');
+}
+
+if(getenv('SMTP_SECURE') !== false) {
+  $config['SMTP_SECURE'] = env('SMTP_SECURE', 'tls');
+}
+
+if(getenv('SMTP_FROM_NAME') !== false) {
+  $config['SMTP_FROM_NAME'] = env('SMTP_FROM_NAME', '');
+}
+
+if(getenv('SMTP_FROM_ADDRESS') !== false) {
+  $config['SMTP_FROM_ADDRESS'] = env('SMTP_FROM_ADDRESS', '');
+}
+
+if(getenv('REG_MAX_USERS') !== false) {
+  $config['REG_MAX_USERS'] = env('REG_MAX_USERS', '');
+}
+
+if(getenv('REG_NOTIFY_ADDRESS') !== false) {
+  $config['REG_NOTIFY_ADDRESS'] = env('REG_NOTIFY_ADDRESS', '');
+}
+
+if(getenv('ENABLE_REGISTRATION') !== false) {
+  $config['ENABLE_REGISTRATION'] = env('ENABLE_REGISTRATION', 'false');
+}
+
+if(getenv('PHP_EXECUTABLE') !== false) {
+  $config['PHP_EXECUTABLE'] = env('PHP_EXECUTABLE', 'false');
+}
+
+
+
 foreach ($config as $name => $value) {
     $contents = preg_replace('/(define\s*\(\'' . $name . '\',\s*)(.*)(\);)/', '$1"' . $value . '"$3', $contents);
 }
@@ -125,11 +178,11 @@ file_put_contents($confpath, $contents);
 function env($name, $default = null)
 {
     $v = getenv($name) ?: $default;
-    
+
     if ($v === null) {
         error('The env ' . $name . ' does not exist');
     }
-    
+
     return $v;
 }
 
@@ -163,4 +216,3 @@ function dbcheck($config)
         return false;
     }
 }
-
