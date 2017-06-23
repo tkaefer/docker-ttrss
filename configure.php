@@ -118,7 +118,7 @@ if(getenv('AUTH_METHOD') == "ldap") {
 }
 
 if (getenv('HTTP_PROXY_URL') !== false) {
-  $contents .= "define('LDAP_AUTH_DEBUG', " . env('HTTP_PROXY_URL') . ");\n";
+  $contents .= "define('_CURL_HTTP_PROXY', '" . env('HTTP_PROXY_URL') . "');\n";
 }
 
 
