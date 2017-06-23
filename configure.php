@@ -8,9 +8,6 @@ $config = array();
 // path to ttrss
 $config['SELF_URL_PATH'] = env('SELF_URL_PATH', 'http://localhost');
 
-if (getenv('HTTP_PROXY_URL') !== false) {
-  $config['_CURL_HTTP_PROXY'] = env('HTTP_PROXY_URL');
-}
 if (getenv('DB_TYPE') !== false) {
     $config['DB_TYPE'] = getenv('DB_TYPE');
 } elseif (getenv('DB_PORT_5432_TCP_ADDR') !== false) {
@@ -119,6 +116,11 @@ if(getenv('AUTH_METHOD') == "ldap") {
     $contents .= "define('LDAP_AUTH_LOG_ATTEMPTS', " . env("LDAP_AUTH_LOG_ATTEMPTS", "FALSE") . ");\n";
     $contents .= "define('LDAP_AUTH_DEBUG', " . env("LDAP_AUTH_DEBUG", "FALSE") . ");\n";
 }
+
+if (getenv('HTTP_PROXY_URL') !== false) {
+  $contents .= "define('LDAP_AUTH_DEBUG', " . env('HTTP_PROXY_URL') . ");\n";
+}
+
 
 if(getenv('LOG_DESTINATION') !== false) {
   $logDestination = env('LOG_DESTINATION', '');
