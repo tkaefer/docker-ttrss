@@ -1,4 +1,4 @@
-FROM php:7-fpm-alpine
+FROM php:7.1-fpm-alpine
 MAINTAINER Tobias Kaefer <tobias@tkaefer.de>
 
 RUN apk --no-cache add curl git supervisor curl-dev libcurl sed libpng-dev \
@@ -7,7 +7,7 @@ RUN docker-php-ext-install curl gd json pgsql ldap mysqli mcrypt pdo_pgsql pdo_m
 
 # install ttrss and patch configuration
 WORKDIR /var/www
-RUN curl -SL https://tt-rss.org/gitlab/fox/tt-rss/repository/archive.tar.gz?ref=master | tar xzC /var/www --strip-components 1 \
+RUN curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /var/www --strip-components 1 \
     && chown www-data:www-data -R /var/www
 
 RUN git clone https://github.com/hydrian/TTRSS-Auth-LDAP.git /TTRSS-Auth-LDAP && \
