@@ -31,5 +31,8 @@ if [ $COUNTER -gt 0 ]; then
   sleep 5
 fi
 
+# ensure externally injected certificates will be included
+/usr/sbin/update-ca-certificates
+
 php /configure.php
 exec supervisord -c /etc/supervisor/conf.d/supervisord.conf
