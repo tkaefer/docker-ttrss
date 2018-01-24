@@ -1,19 +1,16 @@
 FROM php:7.1-fpm-alpine
 MAINTAINER Tobias Kaefer <tobias@tkaefer.de>
 
-RUN apk --no-cache add curl git supervisor curl-dev libcurl sed libpng-dev \
-  postgresql-dev openldap-dev libmcrypt-dev
-RUN docker-php-ext-install curl gd json pgsql ldap mysqli mcrypt pdo_pgsql pdo_mysql pcntl
-
-# install ttrss and patch configuration
 WORKDIR /var/www
-RUN curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /var/www --strip-components 1 \
-    && chown www-data:www-data -R /var/www
-
-RUN git clone https://github.com/hydrian/TTRSS-Auth-LDAP.git /TTRSS-Auth-LDAP && \
-    cp -r /TTRSS-Auth-LDAP/plugins/auth_ldap plugins/ && \
-    ls -la /var/www/plugins
-RUN cp config.php-dist config.php
+RUN apk --no-cache add curl git supervisor curl-dev libcurl sed libpng-dev \
+  postgresql-dev openldap-dev libmcrypt-dev \
+  && docker-php-ext-install curl gd json pgsql ldap mysqli mcrypt pdo_pgsql pdo_mysql pcntl \
+  && curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /var/www --strip-components 1 \
+  && chown www-data:www-data -R /var/www \
+  && git clone https://github.com/hydrian/TTRSS-Auth-LDAP.git /TTRSS-Auth-LDAP \
+  && cp -r /TTRSS-Auth-LDAP/plugins/auth_ldap plugins/ \
+  && ls -la /var/www/plugins \
+  && cp config.php-dist config.php
 
 # expose only nginx HTTP port
 EXPOSE 9000
