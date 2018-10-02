@@ -2,8 +2,8 @@ FROM php:7.2-fpm-alpine
 MAINTAINER Tobias Kaefer <tobias@tkaefer.de>
 
 WORKDIR /var/www
-RUN apk --no-cache add --virtual .build-dependencies make curl-dev git libpng-dev postgresql-dev openldap-dev libmcrypt-dev autoconf build-base \
-  && apk --no-cache add curl supervisor libcurl sed \
+RUN apk --no-cache add curl supervisor libcurl sed libpng postgresql openldap libmcrypt \
+  && apk --no-cache add --virtual .build-dependencies make curl-dev git libpng-dev postgresql-dev openldap-dev libmcrypt-dev autoconf build-base \
   && docker-php-ext-install curl gd json pgsql ldap mysqli pdo_pgsql pdo_mysql pcntl \
   && pecl install mcrypt-1.0.1 \
   && docker-php-ext-enable mcrypt \
