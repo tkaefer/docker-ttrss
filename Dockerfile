@@ -1,16 +1,19 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.2-fpm-alpine
 MAINTAINER Tobias Kaefer <tobias@tkaefer.de>
 
 WORKDIR /var/www
-RUN apk --no-cache add curl git supervisor curl-dev libcurl sed libpng-dev \
-  postgresql-dev openldap-dev libmcrypt-dev \
-  && docker-php-ext-install curl gd json pgsql ldap mysqli mcrypt pdo_pgsql pdo_mysql pcntl \
+RUN apk --no-cache add --virtual .build-dependencies make curl-dev git libpng-dev postgresql-dev openldap-dev libmcrypt-dev autoconf build-base \
+  && apk --no-cache add curl supervisor libcurl sed \
+  && docker-php-ext-install curl gd json pgsql ldap mysqli pdo_pgsql pdo_mysql pcntl \
+  && pecl install mcrypt-1.0.1 \
+  && docker-php-ext-enable mcrypt \
   && curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /var/www --strip-components 1 \
   && chown www-data:www-data -R /var/www \
   && git clone https://github.com/hydrian/TTRSS-Auth-LDAP.git /TTRSS-Auth-LDAP \
   && cp -r /TTRSS-Auth-LDAP/plugins/auth_ldap plugins/ \
   && ls -la /var/www/plugins \
-  && cp config.php-dist config.php
+  && cp config.php-dist config.php \
+  && apk del .build-dependencies build-base
 
 # expose only nginx HTTP port
 EXPOSE 9000
