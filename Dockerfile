@@ -11,12 +11,15 @@ RUN apk --no-cache add curl supervisor libcurl sed libpng postgresql openldap li
   && curl -SL https://git.tt-rss.org/git/tt-rss/archive/master.tar.gz | tar xzC /var/www --strip-components 1 \
   && chown www-data:www-data -R /var/www \
   && git clone https://github.com/hydrian/TTRSS-Auth-LDAP.git /TTRSS-Auth-LDAP \
-  && cp -r /TTRSS-Auth-LDAP/plugins/auth_ldap plugins/ \
+  && cp -r /TTRSS-Auth-LDAP/plugins/auth_ldap /var/www/plugins.local \
   && ls -la /var/www/plugins \
   && cp config.php-dist config.php \
   && curl -SL https://github.com/levito/tt-rss-feedly-theme/archive/master.tar.gz | tar xzC /usr/src \
   && cp -r /usr/src/tt-rss-feedly-theme-master/feedly* /var/www/themes.local \
+  && curl -SL https://github.com/dasmurphy/tinytinyrss-fever-plugin/archive/master.tar.gz  | tar xzC /usr/src \
+  && cp -r /usr/src/tinytinyrss-fever-plugin-master/fever* /var/www/plugins.local \
   && apk del .build-dependencies build-base
+
 
 # expose only nginx HTTP port
 EXPOSE 9000
