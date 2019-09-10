@@ -18,6 +18,7 @@ RUN apk --no-cache add curl supervisor libcurl sed libpng postgresql openldap li
   && cp -r /usr/src/tt-rss-feedly-theme-master/feedly* /var/www/themes.local \
   && curl -SL https://github.com/DigitalDJ/tinytinyrss-fever-plugin/archive/master.tar.gz  | tar xzC /usr/src \
   && cp -r /usr/src/tinytinyrss-fever-plugin-master /var/www/plugins.local/fever \
+  && rm -rf /usr/src/* \
   && apk del .build-dependencies build-base
 
 
